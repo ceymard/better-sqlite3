@@ -78,6 +78,7 @@ private:
 		safe_ints(_db->GetState()->safe_ints),
 		pluck(false),
 		expand(false),
+		array_result(false),
 		returns_data(_returns_data) {
 		assert(db != NULL);
 		assert(handle != NULL);
@@ -98,6 +99,7 @@ private:
 		NODE_SET_PROTOTYPE_METHOD(t, "bind", JS_bind);
 		NODE_SET_PROTOTYPE_METHOD(t, "pluck", JS_pluck);
 		NODE_SET_PROTOTYPE_METHOD(t, "expand", JS_expand);
+		NODE_SET_PROTOTYPE_METHOD(t, "arrayResult", JS_arrayResult);
 		NODE_SET_PROTOTYPE_METHOD(t, "safeIntegers", JS_safeIntegers);
 		NODE_SET_PROTOTYPE_METHOD(t, "columnDeclType", JS_columnDeclType);
 		NODE_SET_PROTOTYPE_METHOD(t, "columnTableName", JS_columnTableName);
@@ -215,7 +217,8 @@ private:
 		if (status == SQLITE_ROW) {
 			v8::Local<v8::Value> result =
 				stmt->pluck ? Data::GetValueJS(isolate, handle, 0, stmt->safe_ints) :
-				stmt->expand ? Data::GetExpandedRowJS(isolate, OnlyContext, handle, stmt->safe_ints)
+				stmt->expand ? Data::GetExpandedRowJS(isolate, OnlyContext, handle, stmt->safe_ints) :
+				stmt->array_result ? Data::GetArrayedRowJS(isolate, OnlyContext, handle, stmt->safe_ints)
 				: Data::GetRowJS(isolate, OnlyContext, handle, stmt->safe_ints);
 			sqlite3_reset(handle);
 			STATEMENT_RETURN(result);
@@ -235,13 +238,15 @@ private:
 		const bool safe_ints = stmt->safe_ints;
 		const bool pluck = stmt->pluck;
 		const bool expand = stmt->expand;
+		const bool array_result = stmt->array_result;
 		bool js_error = false;
 
 		while (sqlite3_step(handle) == SQLITE_ROW) {
 			if (row_count == 0xffffffff) { ThrowRangeError("Array overflow (too many rows returned)"); js_error = true; break; }
 			result->Set(ctx, row_count++,
 				pluck ? Data::GetValueJS(isolate, handle, 0, safe_ints) :
-				expand ? Data::GetExpandedRowJS(isolate, ctx, handle, safe_ints)
+				expand ? Data::GetExpandedRowJS(isolate, ctx, handle, safe_ints) :
+				array_result ? Data::GetArrayedRowJS(isolate, ctx, handle, safe_ints)
 				: Data::GetRowJS(isolate, ctx, handle, safe_ints)
 			).FromJust();
 		}
@@ -275,6 +280,7 @@ private:
 		if (info.Length() == 0) stmt->pluck = true;
 		else { REQUIRE_ARGUMENT_BOOLEAN(first, stmt->pluck); }
 		if (stmt->pluck) stmt->expand = false;
+		if (stmt->array_result) stmt->array_result = false;
 		info.GetReturnValue().Set(info.This());
 	}
 
@@ -285,6 +291,18 @@ private:
 		if (info.Length() == 0) stmt->expand = true;
 		else { REQUIRE_ARGUMENT_BOOLEAN(first, stmt->expand); }
 		if (stmt->expand) stmt->pluck = false;
+		if (stmt->array_result) stmt->array_result = false;
+		info.GetReturnValue().Set(info.This());
+	}
+
+	NODE_METHOD(JS_arrayResult) {
+		Statement* stmt = Unwrap<Statement>(info.This());
+		if (!stmt->returns_data) return ThrowTypeError("The arrayResult() method is only for statements that return data");
+		REQUIRE_DATABASE_NOT_BUSY(stmt->db->GetState());
+		if (info.Length() == 0) stmt->array_result = true;
+		else { REQUIRE_ARGUMENT_BOOLEAN(first, stmt->array_result); }
+		if (stmt->expand) stmt->expand = false;
+		if (stmt->pluck) stmt->pluck = false;
 		info.GetReturnValue().Set(info.This());
 	}
 
@@ -309,5 +327,6 @@ private:
 	bool safe_ints;
 	bool pluck;
 	bool expand;
+	bool array_result;
 	const bool returns_data;
 };

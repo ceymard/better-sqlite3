@@ -338,67 +338,71 @@ private:
   };
 #line 71 "./src/objects/statement.lzz"
   explicit Statement (Database * _db, sqlite3_stmt * _handle, bool _returns_data);
-#line 89 "./src/objects/statement.lzz"
+#line 90 "./src/objects/statement.lzz"
   friend void RegisterModule (v8::Local <v8 :: Object> exports, v8::Local <v8 :: Object> module);
-#line 89 "./src/objects/statement.lzz"
+#line 90 "./src/objects/statement.lzz"
   static void Init (v8::Isolate * isolate, v8::Local <v8 :: Object> exports, v8::Local <v8 :: Object> module);
-#line 115 "./src/objects/statement.lzz"
+#line 117 "./src/objects/statement.lzz"
   static void JS_new (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 156 "./src/objects/statement.lzz"
+#line 158 "./src/objects/statement.lzz"
   static void JS_run (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 174 "./src/objects/statement.lzz"
+#line 176 "./src/objects/statement.lzz"
   static void JS_columnDeclType (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 178 "./src/objects/statement.lzz"
+#line 180 "./src/objects/statement.lzz"
   static void JS_columnTableName (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 182 "./src/objects/statement.lzz"
+#line 184 "./src/objects/statement.lzz"
   static void JS_columnOriginName (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 186 "./src/objects/statement.lzz"
+#line 188 "./src/objects/statement.lzz"
   static void JS_columnDatabaseName (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 190 "./src/objects/statement.lzz"
+#line 192 "./src/objects/statement.lzz"
   static void JS_columnName (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 194 "./src/objects/statement.lzz"
+#line 196 "./src/objects/statement.lzz"
   static void JS_columnCount (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 202 "./src/objects/statement.lzz"
+#line 204 "./src/objects/statement.lzz"
   static void JS_columnType (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 211 "./src/objects/statement.lzz"
+#line 213 "./src/objects/statement.lzz"
   static void JS_get (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 230 "./src/objects/statement.lzz"
+#line 233 "./src/objects/statement.lzz"
   static void JS_all (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 256 "./src/objects/statement.lzz"
-  static void JS_iterate (v8::FunctionCallbackInfo <v8 :: Value> const & info);
 #line 261 "./src/objects/statement.lzz"
+  static void JS_iterate (v8::FunctionCallbackInfo <v8 :: Value> const & info);
+#line 266 "./src/objects/statement.lzz"
   static void JS_bind (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 271 "./src/objects/statement.lzz"
+#line 276 "./src/objects/statement.lzz"
   static void JS_pluck (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 281 "./src/objects/statement.lzz"
+#line 287 "./src/objects/statement.lzz"
   static void JS_expand (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 291 "./src/objects/statement.lzz"
-  static void JS_safeIntegers (v8::FunctionCallbackInfo <v8 :: Value> const & info);
-#line 299 "./src/objects/statement.lzz"
-  static v8::Persistent <v8::Function> constructor;
-#line 300 "./src/objects/statement.lzz"
-  static sqlite3_uint64 next_id;
-#line 301 "./src/objects/statement.lzz"
-  static bool constructing_privileges;
-#line 303 "./src/objects/statement.lzz"
-  Database * const db;
-#line 304 "./src/objects/statement.lzz"
-  sqlite3_stmt * const handle;
-#line 305 "./src/objects/statement.lzz"
-  Extras * const extras;
-#line 306 "./src/objects/statement.lzz"
-  bool alive;
-#line 307 "./src/objects/statement.lzz"
-  bool bound;
-#line 308 "./src/objects/statement.lzz"
-  bool has_bind_map;
+#line 298 "./src/objects/statement.lzz"
+  static void JS_arrayResult (v8::FunctionCallbackInfo <v8 :: Value> const & info);
 #line 309 "./src/objects/statement.lzz"
+  static void JS_safeIntegers (v8::FunctionCallbackInfo <v8 :: Value> const & info);
+#line 317 "./src/objects/statement.lzz"
+  static v8::Persistent <v8::Function> constructor;
+#line 318 "./src/objects/statement.lzz"
+  static sqlite3_uint64 next_id;
+#line 319 "./src/objects/statement.lzz"
+  static bool constructing_privileges;
+#line 321 "./src/objects/statement.lzz"
+  Database * const db;
+#line 322 "./src/objects/statement.lzz"
+  sqlite3_stmt * const handle;
+#line 323 "./src/objects/statement.lzz"
+  Extras * const extras;
+#line 324 "./src/objects/statement.lzz"
+  bool alive;
+#line 325 "./src/objects/statement.lzz"
+  bool bound;
+#line 326 "./src/objects/statement.lzz"
+  bool has_bind_map;
+#line 327 "./src/objects/statement.lzz"
   bool safe_ints;
-#line 310 "./src/objects/statement.lzz"
+#line 328 "./src/objects/statement.lzz"
   bool pluck;
-#line 311 "./src/objects/statement.lzz"
+#line 329 "./src/objects/statement.lzz"
   bool expand;
-#line 312 "./src/objects/statement.lzz"
+#line 330 "./src/objects/statement.lzz"
+  bool array_result;
+#line 331 "./src/objects/statement.lzz"
   bool const returns_data;
 };
 #line 1 "./src/objects/statement-iterator.lzz"
@@ -569,18 +573,24 @@ namespace Data
 namespace Data
 {
 #line 94 "./src/util/data.lzz"
+  v8::Local <v8::Value> GetArrayedRowJS (v8::Isolate * isolate, v8::Local <v8::Context> ctx, sqlite3_stmt * handle, bool safe_ints);
+}
+#line 54 "./src/util/data.lzz"
+namespace Data
+{
+#line 109 "./src/util/data.lzz"
   void GetArgumentsJS (v8::Isolate * isolate, v8::Local <v8::Value> * out, sqlite3_value * * values, int argument_count, bool safe_ints);
 }
 #line 54 "./src/util/data.lzz"
 namespace Data
 {
-#line 101 "./src/util/data.lzz"
+#line 116 "./src/util/data.lzz"
   int BindValueFromJS (v8::Isolate * isolate, sqlite3_stmt * handle, int index, v8::Local <v8::Value> value);
 }
 #line 54 "./src/util/data.lzz"
 namespace Data
 {
-#line 106 "./src/util/data.lzz"
+#line 121 "./src/util/data.lzz"
   void ResultValueFromJS (v8::Isolate * isolate, sqlite3_context * invocation, v8::Local <v8::Value> value, CustomFunction * function);
 }
 #line 1 "./src/util/binder.lzz"
