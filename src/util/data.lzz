@@ -92,8 +92,8 @@ namespace Data {
 	}
 
 	v8::Local<v8::Value> GetArrayedRowJS(v8::Isolate* isolate, v8::Local<v8::Context> ctx, sqlite3_stmt* handle, bool safe_ints) {
-		v8::Local<v8::Array> row = v8::Array::New(isolate, 0);
 		uint32_t column_count = sqlite3_column_count(handle);
+		v8::Local<v8::Array> row = v8::Array::New(isolate, column_count);
 
 		for (uint32_t i=0; i<column_count; ++i) {
 			row->Set(
